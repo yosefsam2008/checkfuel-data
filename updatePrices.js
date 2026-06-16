@@ -10,7 +10,7 @@ async function scrapePrices() {
     console.log('Fetching live prices from Dor Alon...');
     
     // 1. קריאת האתר הרשמי והיציב של דור אלון
-    const { data } = await axios.get('https://www.israelhayom.co.il/gas-prices', {
+    const { data } = await axios.get('https://www.doralon.co.il/fuels-price/', {
       headers: { 
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' 
       } 
@@ -28,6 +28,13 @@ async function scrapePrices() {
     let newGasolinePrice = matchGasoline ? matchGasoline[1] : null;
     let newDieselPrice = matchDiesel ? matchDiesel[1] : null;
 
+    if (newDieselPrice && parseFloat(newDieselPrice) > 5 && parseFloat(newDieselPrice) < 12) {
+      currentData.Diesel = newDieselPrice;
+      console.log(`✅ Successfully scraped Diesel: ₪${newDieselPrice}`);
+    } else {
+      console.log(`⚠️ Scraped invalid Diesel price (₪${newDieselPrice}), keeping old price.`);
+    }
+    
     // 4. הפתרון לשגיאה: יצירת התיקייה public אם היא חסרה
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
