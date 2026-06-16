@@ -8,7 +8,7 @@ async function scrapePrices() {
   try {
     console.log('Fetching live prices...');
     // 1. קריאת האתר
-    const { data } = await axios.get('https://www.globes.co.il/portal/fuel.aspx', {
+    const { data } = await axios.get('https://www.israelhayom.co.il/gas-prices', {
       headers: { 'User-Agent': 'Mozilla/5.0' } 
     });
     
