@@ -23,7 +23,7 @@ async function scrapePrices() {
     
     // 3. שימוש ב-Regex כדי לצוד את המספר
     const matchGasoline = pageText.match(/בנזין 95[^\d]*?(\d\.\d{2})/);
-    const matchDiesel = pageText.match(/סולר[^\d]*?(\d{1,2}\.\d{2})/);
+    const matchDiesel = pageText.match(/בנזין 98[^\d]*?(\d{1,2}\.\d{2})/);
 
     let newGasolinePrice = matchGasoline ? matchGasoline[1] : null;
     let newDieselPrice = matchDiesel ? matchDiesel[1] : null;
