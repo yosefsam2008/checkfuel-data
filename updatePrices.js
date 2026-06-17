@@ -21,32 +21,25 @@ async function scrapePrices() {
     // 2. קריאת כל הטקסט החשוף באתר
     const pageText = $('body').text().replace(/\s+/g, ' '); 
     
-    // 3. שימוש ב-Regex כדי לצוד את המספר
+    // 3. שימוש ב-Regex כדי לצוד את המספרים
     const matchGasoline = pageText.match(/בנזין 95[^\d]*?(\d\.\d{2})/);
     const matchDiesel = pageText.match(/בנזין 98[^\d]*?(\d{1,2}\.\d{2})/);
 
     let newGasolinePrice = matchGasoline ? matchGasoline[1] : null;
     let newDieselPrice = matchDiesel ? matchDiesel[1] : null;
 
-    if (newDieselPrice && parseFloat(newDieselPrice) > 5 && parseFloat(newDieselPrice) < 12) {
-      currentData.Diesel = newDieselPrice;
-      console.log(`✅ Successfully scraped Diesel: ₪${newDieselPrice}`);
-    } else {
-      console.log(`⚠️ Scraped invalid Diesel price (₪${newDieselPrice}), keeping old price.`);
-    }
-    
-    // 4. הפתרון לשגיאה: יצירת התיקייה public אם היא חסרה
+    // 4. יצירת התיקייה public אם היא חסרה
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
     }
 
-    // 5. קריאת קובץ הנתונים הקיים
+    // 5. קריאת קובץ הנתונים הקיים (הזזנו את זה לכאן!)
     let currentData = { Gasoline: "7.36", Diesel: "9.58", Electric: "0.60" };
     if (fs.existsSync(filePath)) {
       currentData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     }
 
-    // 6. אימות והגנה
+    // 6. אימות והגנה - עדכון currentData רק אם הערכים תקינים
     if (newGasolinePrice && parseFloat(newGasolinePrice) > 5 && parseFloat(newGasolinePrice) < 10) {
       currentData.Gasoline = newGasolinePrice;
       console.log(`✅ Successfully scraped Gasoline 95: ₪${newGasolinePrice}`);
@@ -54,9 +47,11 @@ async function scrapePrices() {
       console.log('⚠️ Could not find valid Gasoline price, keeping existing fallback price.');
     }
 
-    if (newDieselPrice && parseFloat(newDieselPrice) > 5) {
+    if (newDieselPrice && parseFloat(newDieselPrice) > 5 && parseFloat(newDieselPrice) < 12) {
       currentData.Diesel = newDieselPrice;
       console.log(`✅ Successfully scraped Diesel: ₪${newDieselPrice}`);
+    } else {
+      console.log(`⚠️ Scraped invalid Diesel price (₪${newDieselPrice}), keeping old price.`);
     }
 
     // 7. כתיבה חזרה לקובץ ושמירה
