@@ -68,7 +68,7 @@ function check(field, price) {
 
 // inputs: { Gasoline: { gate, excise }, Diesel: { gate, excise }, Electric: cbsJson }; any input may be an Error
 export function buildPrices(inputs, today) {
-  const body = { ...FALLBACK, effectiveFrom: ANCHORS.Gasoline.date, computed: {}, source: 'data.gov.il, משרד האנרגיה' };
+  const body = { ...FALLBACK, effectiveFrom: ANCHORS.Gasoline.date, computed: {}, source: 'data.gov.il, משרד האנרגיה; הלמ"ס' };
   for (const field of ['Gasoline', 'Diesel', 'Electric']) {
     try {
       const r = field === 'Electric' ? electricPrice(inputs.Electric) : fuelPrice(field, inputs[field], today);

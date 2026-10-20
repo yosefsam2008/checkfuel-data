@@ -72,5 +72,5 @@ test('diesel at the anchor inputs gives 11.71', () => {
 test('response keeps the string fields the apps parse', () => {
   const p = buildPrices(inputs(), '2026-10-20');
   for (const k of ['Gasoline', 'Diesel', 'Electric']) assert.equal(typeof p[k], 'string');
-  assert.equal(p.source, 'data.gov.il, משרד האנרגיה');
+  assert.equal(p.source, 'data.gov.il, משרד האנרגיה; הלמ"ס');
 });
