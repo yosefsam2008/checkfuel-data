@@ -1,7 +1,7 @@
 // node --test api/   (no network)
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPrices } from './prices.js';
+import { buildPrices } from '../api/prices.js';
 
 const row = (date, name, price) => ({ 'תאריך': `${date} 00:00:00`, 'מוצר': name, 'מחיר': price });
 const GAS = 'בנזין 95 אוקטן נטול עופרת בהזרמה';
