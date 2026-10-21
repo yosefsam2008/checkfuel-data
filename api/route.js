@@ -23,15 +23,18 @@ export async function POST(req) {
   } catch {
     return json({ error: 'bad_json' }, 400);
   }
+  // origin is GPS coords or a typed address
+  const addr = typeof body?.origin === 'string' ? body.origin.trim() : null;
   const lat = body?.origin?.latitude;
   const lng = body?.origin?.longitude;
   const dest = typeof body?.destination === 'string' ? body.destination.trim() : '';
-  if (typeof lat !== 'number' || typeof lng !== 'number' || Math.abs(lat) > 90 || Math.abs(lng) > 180 || !dest || dest.length > 200) {
+  const coordsOk = typeof lat === 'number' && typeof lng === 'number' && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+  if ((addr === null ? !coordsOk : !addr || addr.length > 200) || !dest || dest.length > 200) {
     return json({ error: 'bad_request' }, 400);
   }
 
   // ~100m origin rounding so nearby requests share a cache entry
-  const key = `${lat.toFixed(3)},${lng.toFixed(3)}|${dest.toLowerCase()}`;
+  const key = `${addr !== null ? addr.toLowerCase() : `${lat.toFixed(3)},${lng.toFixed(3)}`}|${dest.toLowerCase()}`;
   if (cache.has(key)) return json(cache.get(key));
 
   const res = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
@@ -42,7 +45,7 @@ export async function POST(req) {
       'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline',
     },
     body: JSON.stringify({
-      origin: { location: { latLng: { latitude: lat, longitude: lng } } },
+      origin: addr !== null ? { address: addr } : { location: { latLng: { latitude: lat, longitude: lng } } },
       destination: { address: dest },
       travelMode: 'DRIVE',
       languageCode: 'he',
